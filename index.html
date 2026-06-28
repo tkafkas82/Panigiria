@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Πανηγύρια Σερίφου</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --sea:     #1a4a6b;
+    --sky:     #2d7ab8;
+    --sand:    #f2ece0;
+    --white:   #fdfcf9;
+    --ink:     #1c1814;
+    --muted:   #7a7060;
+    --accent:  #c0622a;
+    --past:    #b8b0a0;
+    --next:    #c0622a;
+    --soon:    #2d7ab8;
+    --far:     #1a4a6b;
+  }
+
+  html { scroll-behavior: auto; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--sand);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--sea);
+    color: var(--white);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 40px;
+    background: var(--sand);
+    clip-path: ellipse(55% 100% at 50% 100%);
+  }
+  .header-eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 0.8rem;
+  }
+  header h1 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.5rem;
+  }
+  header h1 em {
+    font-style: italic;
+    color: #8ec8f0;
+  }
+  .header-sub {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
+    margin-top: 0.4rem;
+  }
+
+  /* NEXT EVENT BANNER */
+  .next-banner {
+    background: var(--accent);
+    color: #fff;
+    text-align: center;
+    padding: 0.9rem 1.5rem;
+    font-size: 0.9rem;
+    letter-spacing: 0.01em;
+  }
+  .next-banner strong {
+    font-weight: 500;
+  }
+  .next-banner .countdown {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-left: 0.4rem;
+  }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    gap: 1.2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 1.2rem 1rem 0.6rem;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+  .legend-dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* TIMELINE */
+  .timeline-wrapper {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem 4rem;
+  }
+
+  .month-section {
+    margin-bottom: 0.5rem;
+  }
+  .month-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 1.4rem 0 0.5rem 3.2rem;
+    border-top: 1px solid rgba(0,0,0,0.08);
+  }
+  .month-label.current-month {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .event-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 0.65rem 0;
+    position: relative;
+  }
+  .event-row::before {
+    content: '';
+    position: absolute;
+    left: 1.2rem;
+    top: 0; bottom: 0;
+    width: 1px;
+    background: rgba(0,0,0,0.08);
+  }
+  .event-row:first-of-type::before { top: 50%; }
+  .event-row:last-of-type::before  { bottom: 50%; }
+
+  .event-dot-wrap {
+    flex-shrink: 0;
+    width: 2.4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 0.3rem;
+    position: relative;
+    z-index: 1;
+  }
+  .event-dot {
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    background: var(--far);
+    border: 2px solid var(--sand);
+    box-shadow: 0 0 0 1px var(--far);
+  }
+  .event-dot.is-past    { background: var(--past); box-shadow: 0 0 0 1px var(--past); }
+  .event-dot.is-next    { background: var(--next); box-shadow: 0 0 0 1px var(--next); width: 14px; height: 14px; }
+  .event-dot.is-soon    { background: var(--soon); box-shadow: 0 0 0 1px var(--soon); }
+  .event-dot.is-far     { background: var(--far);  box-shadow: 0 0 0 1px var(--far); }
+
+  .event-card {
+    flex: 1;
+    background: var(--white);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+    border-left: 3px solid transparent;
+    transition: box-shadow 0.15s;
+  }
+  .event-card:hover { box-shadow: 0 3px 10px rgba(0,0,0,0.12); }
+  .event-card.is-past    { border-left-color: var(--past); opacity: 0.6; }
+  .event-card.is-next    { border-left-color: var(--next); background: #fff7f3; }
+  .event-card.is-soon    { border-left-color: var(--soon); }
+  .event-card.is-far     { border-left-color: var(--far); }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 0.2rem;
+    flex-wrap: wrap;
+  }
+  .card-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--ink);
+  }
+  .card-badge {
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    font-weight: 500;
+    padding: 0.15rem 0.5rem;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .badge-past { background: #ede9e1; color: var(--past); }
+  .badge-next { background: #fde8d8; color: var(--accent); }
+  .badge-days { background: #ddeef8; color: var(--sea); }
+  .badge-far  { background: #d8e8f0; color: var(--sea); }
+
+  .card-date {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 0.25rem;
+  }
+  .card-desc {
+    font-size: 0.8rem;
+    color: #5a5040;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .violin-icon { color: var(--sky); }
+
+  /* PULSE HIGHLIGHT */
+  @keyframes pulseGlow {
+    0%   { box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+    25%  { box-shadow: 0 0 0 6px rgba(192,98,42,0.25), 0 4px 20px rgba(192,98,42,0.35); }
+    60%  { box-shadow: 0 0 0 12px rgba(192,98,42,0.08), 0 4px 24px rgba(192,98,42,0.2); }
+    100% { box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+  }
+  .pulse-highlight {
+    animation: pulseGlow 1.6s ease-out forwards;
+  }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+  footer a { color: var(--sky); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="header-eyebrow">Σέριφος · Κυκλάδες</p>
+  <h1>Πανηγύρια <em>2026</em></h1>
+  <p class="header-sub">Παραδοσιακές γιορτές στο νησί</p>
+</header>
+
+<div class="next-banner" id="next-banner">
+  <!-- filled by JS -->
+</div>
+
+<div class="legend">
+  <span class="legend-item"><span class="legend-dot" style="background:var(--next)"></span>Επόμενο</span>
+  <span class="legend-item"><span class="legend-dot" style="background:var(--soon)"></span>Σύντομα (&lt;30 μέρες)</span>
+  <span class="legend-item"><span class="legend-dot" style="background:var(--far)"></span>Μελλοντικό</span>
+  <span class="legend-item"><span class="legend-dot" style="background:var(--past)"></span>Παρελθόν</span>
+</div>
+
+<div class="timeline-wrapper" id="timeline"></div>
+
+<footer>
+  Πηγή: <a href="https://www.discover-serifos.com/el/anakalupste/drastiriotites/paniguria" target="_blank">discover-serifos.com</a> &nbsp;·&nbsp; Δεδομένα 2026
+</footer>
+
+<script>
+// Today's date
+const TODAY = new Date(2026, 5, 28); // June 28 2026
+TODAY.setHours(0,0,0,0);
+
+// Easter 2026: April 12, 2026 (Orthodox)
+const EASTER_2026 = new Date(2026, 3, 12);
+// Zoodochos Pigi: Friday after Easter = April 17 2026 (eve Thursday 16th)
+const ZOODOCHOS_EVE = new Date(2026, 3, 16); // April 16 eve
+const ZOODOCHOS_DAY = new Date(2026, 3, 17); // April 17
+
+// Ascension: 40 days after Easter = May 21 (eve Wed May 20, day Thu May 21)
+const ANALIPSI_EVE = new Date(2026, 4, 20);
+const ANALIPSI_DAY = new Date(2026, 4, 21);
+
+// Pentecost: 50 days after Easter = June 1 (Sun), Holy Spirit = June 2 (Mon)
+const PENTIKOSTI = new Date(2026, 5, 1);
+const AGIO_PNEUMA = new Date(2026, 5, 2);
+
+function d(month0, day) {
+  const dt = new Date(2026, month0, day);
+  dt.setHours(0,0,0,0);
+  return dt;
+}
+
+function daysFrom(date) {
+  return Math.round((date - TODAY) / 86400000);
+}
+
+function formatDate(dt) {
+  return dt.toLocaleDateString('el-GR', { day: 'numeric', month: 'long' });
+}
+
+const MONTHS_EL = ['Ιανουάριος','Φεβρουάριος','Μάρτιος','Απρίλιος','Μάιος','Ιούνιος',
+                   'Ιούλιος','Αύγουστος','Σεπτέμβριος','Οκτώβριος','Νοέμβριος','Δεκέμβριος'];
+
+// Raw events: {name, location, date (primary display date = day of feast), eve, day, desc, hasViolins}
+// date = the main date used for sorting. eve/day used for display.
+const RAW = [
+  // January
+  { name: 'Τρεις Ιεράρχες', location: 'Αλογόμαντρα', eve: d(0,29), day: d(0,30), hasViolins: true, desc: 'Πανηγύρι με βιολιά παραμονή και ανήμερα' },
+  // April
+  { name: 'Άι Γιώργης ο Βίγλης', location: 'Βατούδι', eve: null, day: d(3,23), hasViolins: false, desc: 'Χωρίς βιολιά, ανήμερα (κινητή αν Μ.Εβδομάδα)' },
+  { name: 'Άη Γιώργης', location: 'Κεφάλα', eve: null, day: d(3,23), hasViolins: false, desc: 'Χωρίς βιολιά, ανήμερα' },
+  { name: 'Παναγία η Λιόμαντρα (Ζωοδόχος Πηγή)', location: 'Σκλαβογιάννη', eve: ZOODOCHOS_EVE, day: ZOODOCHOS_DAY, hasViolins: true, desc: 'Πανηγύρι με βιολιά, παραμονή – Λειτουργία ανήμερα' },
+  // May
+  { name: 'Αγία Ειρήνη', location: 'Κουταλάς', eve: d(4,4), day: d(4,5), hasViolins: true, desc: 'Πανηγύρι με βιολιά, παραμονή – Λειτουργία ανήμερα' },
+  { name: 'Αγίων Κωνσταντίνου & Ελένης', location: 'Καλλίτσος', eve: d(4,20), day: d(4,21), hasViolins: true, desc: 'Πανηγύρι με βιολιά, παραμονή – Λειτουργία ανήμερα' },
+  // June
+  { name: 'Παναγία η Λιόμαντρα (Ανάληψη)', location: 'Σκλαβογιάννη', eve: ANALIPSI_EVE, day: ANALIPSI_DAY, hasViolins: false, desc: 'Χωρίς βιολιά, παραμονή – Λειτουργία ανήμερα' },
+  { name: 'Αγία Τριάδα', location: 'Μαύρα Βολάδια', eve: PENTIKOSTI, day: AGIO_PNEUMA, hasViolins: true, desc: 'Πανηγύρι με βιολιά, παραμονή και ανήμερα' },
+  { name: 'Παναγία η Λιόμαντρα (Αγ. Πνεύμα)', location: 'Σκλαβογιάννη', eve: PENTIKOSTI, day: AGIO_PNEUMA, hasViolins: true, desc: 'Πανηγύρι με βιολιά, παραμονή – Λειτουργία ανήμερα' },
+  { name: 'Αγίων Πέτρου & Παύλου', location: 'Πλατύ Γυαλό', eve: d(5,28), day: d(5,29), hasViolins: false, desc: 'Χωρίς βιολιά, παραμονή – Λειτουργία ανήμερα (όχι πάντα)' },
+  { name: 'Άγιοι Ανάργυροι', location: 'Καλαβράτσενα', eve: d(5,30), day: d(6,1), hasViolins: true, desc: 'Πανηγύρι με βιολιά, παραμονή – Λειτουργία ανήμερα' },
+  { name: 'Άγιοι Ανάργυροι', location: 'Γαλανή', eve: d(5,30), day: d(6,1), hasViolins: true, desc: 'Πανηγύρι με βιολιά, παραμονή – Λειτουργία ανήμερα' },
+  // July
+  { name: 'Ταξιάρχης Γαβριήλ', location: 'Συκαμιά', eve: d(6,12), day: d(6,13), hasViolins: true, desc: 'Πανηγύρι με βιολιά, παραμονή – Λειτουργία ανήμερα' },
+  { name: 'Αγία Μαρίνα', location: 'Αγγουριές', eve: d(6,16), day: d(6,17), hasViolins: true, desc: 'Πανηγύρι με βιολιά, παραμονή – Λειτουργία ανήμερα' },
+  { name: 'Προφήτης Ηλίας', location: 'Βουνιά', eve: null, day: d(6,20), hasViolins: false, desc: 'Μόνο λειτουργία, ανήμερα' },
+  { name: 'Προφήτης Ηλίας', location: 'Ξερό Χωριό', eve: null, day: d(6,20), hasViolins: false, desc: 'Μόνο λειτουργία, ανήμερα' },
+  { name: 'Αγία Παρασκευή', location: 'Κάτω Χώρα', eve: null, day: d(6,26), hasViolins: false, desc: 'Μόνο λειτουργία, ανήμερα' },
+  { name: 'Αγία Παρασκευή', location: 'Κουντούρα (Γαλανή)', eve: null, day: d(6,26), hasViolins: false, desc: 'Μόνο λειτουργία, ανήμερα' },
+  { name: 'Άγιος Παντελεήμων', location: 'Πέντε Πηγάδια', eve: null, day: d(6,27), hasViolins: true, desc: 'Πανηγύρι με βιολιά και λειτουργία, ανήμερα' },
+  // August
+  { name: 'Σωτήρας', location: 'Καλό Αμπέλι', eve: d(7,5), day: d(7,6), hasViolins: true, desc: 'Πανηγύρι με βιολιά, παραμονή – Λειτουργία ανήμερα' },
+  { name: 'Παναγία η Σκοπιανή', location: 'Σκοπούς', eve: d(7,14), day: d(7,15), hasViolins: true, desc: 'Πανηγύρι με βιολιά παραμονή και ανήμερα' },
+  { name: 'Παναγία', location: 'Ράμμος', eve: d(7,14), day: d(7,15), hasViolins: true, desc: 'Πανηγύρι με βιολιά, παραμονή – Λειτουργία ανήμερα' },
+  { name: 'Παναγία', location: 'Πύργος', eve: d(7,15), day: d(7,16), hasViolins: true, desc: 'Πανηγύρι με βιολιά, παραμονή – Λειτουργία ανήμερα' },
+  { name: 'Παναγία η Λιόμαντρα (Δεκαπενταύγουστος)', location: 'Σκλαβογιάννη', eve: d(7,15), day: d(7,16), hasViolins: false, desc: 'Χωρίς βιολιά, παραμονή – Λειτουργία ανήμερα' },
+  { name: 'Παναγία', location: 'Παναγιά', eve: null, day: d(7,16), hasViolins: false, desc: 'Μόνο λειτουργία ανήμερα (πιθανόν γλέντι σε πολυχώρο)' },
+  { name: 'Παναγιά η Μηλιανή / Αιμιλιανή', location: 'Χώρα', eve: d(7,22), day: d(7,23), hasViolins: true, desc: 'Πανηγύρι με βιολιά, παραμονή – Λειτουργία ανήμερα' },
+  { name: 'Παναγιά', location: 'Πέντε Πηγάδια', eve: null, day: d(7,24), hasViolins: true, desc: 'Πανηγύρι με βιολιά και λειτουργία, ανήμερα' },
+  { name: 'Παναγιά', location: 'Μασκάλια', eve: d(7,23), day: d(7,24), hasViolins: true, desc: 'Πανηγύρι με βιολιά, παραμονή – Λειτουργία ανήμερα' },
+  { name: 'Άγιος Νικόλαος', location: 'Σκάλα', eve: d(7,23), day: d(7,24), hasViolins: true, desc: 'Πανηγύρι με βιολιά, παραμονή – Λειτουργία ανήμερα' },
+  { name: 'Παναγιά Καμαρωτή', location: 'Μπαμπά', eve: null, day: null, hasViolins: true, desc: 'Αύγουστος, χωρίς σταθερή ημερομηνία – Βιολιά και λειτουργία' },
+  { name: 'Άγιος Ιωάννης ο Πρόδρομος', location: 'Σκλαβογιάννη', eve: null, day: d(7,29), hasViolins: false, desc: 'Μόνο λειτουργία, ανήμερα' },
+  // September
+  { name: 'Άγιος Μάμας', location: 'Βουνιά', eve: d(8,1), day: d(8,2), hasViolins: true, desc: 'Πανηγύρι με βιολιά, παραμονή – Λειτουργία ανήμερα' },
+  { name: 'Άγιος Σώστης', location: 'Παραλία Αγ. Σώστη', eve: d(8,6), day: d(8,7), hasViolins: true, desc: 'Πανηγύρι με βιολιά παραμονή και ανήμερα' },
+  { name: 'Παναγία του Βουνού', location: 'Αβεσσαλό', eve: d(8,7), day: d(8,8), hasViolins: true, desc: 'Πανηγύρι με βιολιά, παραμονή – Λειτουργία ανήμερα' },
+  { name: 'Πάνω Σταυρός', location: 'Παλιά Μιτάτα', eve: null, day: d(8,14), hasViolins: false, desc: 'Μόνο λειτουργία, ανήμερα' },
+  { name: 'Αγία Θέκλα', location: 'Σκλαβογιάννη', eve: d(8,23), day: d(8,24), hasViolins: true, desc: 'Πανηγύρι με βιολιά παραμονή και ανήμερα' },
+  { name: 'Άγιος Ιωάννης', location: 'Άγιος Ιωάννης', eve: d(8,25), day: d(8,26), hasViolins: true, desc: 'Πανηγύρι με βιολιά, παραμονή – Λειτουργία ανήμερα' },
+  // October
+  { name: 'Άγιος Κυπριανός', location: 'Συκαμιά', eve: null, day: d(9,2), hasViolins: false, desc: 'Χωρίς βιολιά, ανήμερα' },
+  { name: 'Αγία Αναστασία', location: 'Πάνω Διποτάματα', eve: null, day: d(9,29), hasViolins: false, desc: 'Μόνο λειτουργία, ανήμερα' },
+  // November
+  { name: 'Των Ταξιαρχών', location: 'Μονή Ταξιαρχών', eve: null, day: d(10,8), hasViolins: false, desc: 'Μόνο λειτουργία, παραμονή και ανήμερα' },
+  { name: 'Αγία Αικατερίνη', location: 'Νόχτα', eve: d(10,24), day: d(10,25), hasViolins: true, desc: 'Πανηγύρι με βιολιά, παραμονή – Λειτουργία ανήμερα' },
+  // December
+  { name: 'Άγιος Νικόλαος', location: 'Λιβάδι', eve: null, day: d(11,6), hasViolins: false, desc: 'Μόνο λειτουργία, ανήμερα – Περιφορά εικόνας' },
+  { name: 'Άγιος Στέφανος', location: 'Κήποι', eve: d(11,26), day: d(11,27), hasViolins: true, desc: 'Πανηγύρι με βιολιά και λειτουργία, ανήμερα' },
+];
+
+// Sort by sort date (eve if available, else day; null dates go to Aug 2026 middle)
+function sortDate(ev) {
+  if (!ev.eve && !ev.day) return new Date(2026, 7, 15);
+  return ev.eve || ev.day;
+}
+
+RAW.sort((a, b) => sortDate(a) - sortDate(b));
+
+// Determine status
+function getStatus(ev) {
+  const sd = sortDate(ev);
+  const diff = daysFrom(sd);
+  if (ev.day && daysFrom(ev.day) < 0) return 'past';
+  if (diff < 0) return 'past';
+  return 'future';
+}
+
+// Find next event
+let nextIdx = -1;
+for (let i = 0; i < RAW.length; i++) {
+  const sd = sortDate(RAW[i]);
+  if (daysFrom(sd) >= 0) { nextIdx = i; break; }
+}
+
+// Badge text
+function badge(ev, i) {
+  const sd = sortDate(ev);
+  const diff = daysFrom(sd);
+  if (getStatus(ev) === 'past') return { cls: 'badge-past', text: 'Πέρασε' };
+  if (i === nextIdx) return { cls: 'badge-next', text: diff === 0 ? 'ΣΗΜΕΡΑ!' : `σε ${diff} μέρ${diff===1?'α':'ες'}` };
+  if (diff <= 30) return { cls: 'badge-days', text: `σε ${diff} μέρ${diff===1?'α':'ες'}` };
+  return { cls: 'badge-far', text: `σε ${diff} μέρ${diff===1?'α':'ες'}` };
+}
+
+function dotClass(ev, i) {
+  const st = getStatus(ev);
+  if (st === 'past') return 'is-past';
+  if (i === nextIdx) return 'is-next';
+  const diff = daysFrom(sortDate(ev));
+  if (diff <= 30) return 'is-soon';
+  return 'is-far';
+}
+function cardClass(ev, i) {
+  const st = getStatus(ev);
+  if (st === 'past') return 'is-past';
+  if (i === nextIdx) return 'is-next';
+  const diff = daysFrom(sortDate(ev));
+  if (diff <= 30) return 'is-soon';
+  return 'is-far';
+}
+
+function dateRange(ev) {
+  if (!ev.eve && !ev.day) return 'Αύγουστος (χωρίς σταθερή ημερομηνία)';
+  if (ev.eve && ev.day) return `${formatDate(ev.eve)} – ${formatDate(ev.day)}`;
+  return formatDate(ev.day);
+}
+
+// Group by month
+function monthOf(ev) {
+  const sd = sortDate(ev);
+  return sd.getMonth();
+}
+
+// Render
+const timeline = document.getElementById('timeline');
+let currentMonth = -1;
+let monthDiv = null;
+
+RAW.forEach((ev, i) => {
+  const m = monthOf(ev);
+  if (m !== currentMonth) {
+    currentMonth = m;
+    const ms = document.createElement('div');
+    ms.className = 'month-section';
+    const ml = document.createElement('div');
+    const isCurrentMonth = m === TODAY.getMonth();
+    ml.className = 'month-label' + (isCurrentMonth ? ' current-month' : '');
+    ml.textContent = MONTHS_EL[m] + ' 2026' + (isCurrentMonth ? ' — Τώρα' : '');
+    ms.appendChild(ml);
+    timeline.appendChild(ms);
+    monthDiv = ms;
+  }
+
+  const b = badge(ev, i);
+  const dc = dotClass(ev, i);
+  const cc = cardClass(ev, i);
+  const violin = ev.hasViolins ? '<span class="violin-icon">🎻</span> ' : '';
+
+  const row = document.createElement('div');
+  row.className = 'event-row';
+  if (i === nextIdx) row.id = 'next-event';
+  row.innerHTML = `
+    <div class="event-dot-wrap">
+      <div class="event-dot ${dc}"></div>
+    </div>
+    <div class="event-card ${cc}">
+      <div class="card-top">
+        <div class="card-name">${ev.name} <span style="font-weight:400;color:var(--muted);font-size:0.88rem">· ${ev.location}</span></div>
+        <span class="card-badge ${b.cls}">${b.text}</span>
+      </div>
+      <div class="card-date">${dateRange(ev)}</div>
+      <div class="card-desc">${violin}${ev.desc}</div>
+    </div>`;
+  monthDiv.appendChild(row);
+});
+
+// Autoscroll to next event — mobile-safe
+function doScroll() {
+  const target = document.getElementById('next-event');
+  if (!target) return;
+
+  const targetY = target.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.35;
+  const startY = window.scrollY;
+  const distance = targetY - startY;
+  const duration = 1100;
+  let startTime = null;
+
+  function easeInOutCubic(t) {
+    return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3) / 2;
+  }
+
+  function step(ts) {
+    if (!startTime) startTime = ts;
+    const progress = Math.min((ts - startTime) / duration, 1);
+    window.scrollTo(0, startY + distance * easeInOutCubic(progress));
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    } else {
+      const card = target.querySelector('.event-card');
+      if (card) {
+        card.classList.add('pulse-highlight');
+        setTimeout(() => card.classList.remove('pulse-highlight'), 1800);
+      }
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+// Try after DOM ready, then again after full load, then a final safety net
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => setTimeout(doScroll, 300));
+} else {
+  setTimeout(doScroll, 300);
+}
+window.addEventListener('load', () => setTimeout(doScroll, 600));
+
+// Next banner
+const banner = document.getElementById('next-banner');
+if (nextIdx >= 0) {
+  const ne = RAW[nextIdx];
+  const diff = daysFrom(sortDate(ne));
+  const dayText = diff === 0 ? 'ΣΗΜΕΡΑ' : diff === 1 ? 'ΑΥΡΙΟ' : `σε ${diff} μέρες`;
+  banner.innerHTML = `🎉 Επόμενο πανηγύρι: <strong>${ne.name} – ${ne.location}</strong><span class="countdown">${dayText}</span>`;
+}
+</script>
+</body>
+</html>
