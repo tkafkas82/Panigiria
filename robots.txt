@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://panigiria.vercel.app/sitemap.xml
