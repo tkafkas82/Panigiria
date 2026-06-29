@@ -2,269 +2,395 @@
 <html lang="el">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Πανηγύρια Σερίφου</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<meta name="description" content="Οι παραδοσιακές γιορτές και τα πανηγύρια της Σερίφου, με ζωντανή αντίστροφη μέτρηση και υπενθυμίσεις.">
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1a4a6b">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Πανηγύρια">
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
     --sea:     #1a4a6b;
+    --sea-deep:#143a55;
     --sky:     #2d7ab8;
-    --sand:    #f2ece0;
+    --sky-lt:  #8ec8f0;
+    --sand:    #f4eee2;
     --white:   #fdfcf9;
     --ink:     #1c1814;
     --muted:   #7a7060;
-    --accent:  #c0622a;
+    --accent:  #c0622a;   /* terracotta */
+    --bougain: #b5316b;   /* bougainvillea */
     --past:    #b8b0a0;
     --next:    #c0622a;
     --soon:    #2d7ab8;
     --far:     #1a4a6b;
+    --line:    rgba(0,0,0,0.08);
+    --shadow:  0 1px 3px rgba(20,40,60,0.08);
+    --shadow-lg: 0 6px 24px rgba(20,40,60,0.16);
+    --safe-top: env(safe-area-inset-top, 0px);
   }
 
   html { scroll-behavior: auto; }
 
   body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     background: var(--sand);
     color: var(--ink);
     min-height: 100vh;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  /* HEADER */
+  /* ============ SPLASH ============ */
+  #splash {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.4rem;
+    background: linear-gradient(180deg, #2d7ab8 0%, #1a4a6b 70%, #143a55 100%);
+    color: #fff;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+  }
+  #splash.hide { opacity: 0; visibility: hidden; }
+  .splash-art { width: min(46vw, 200px); height: auto; }
+  .splash-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(2rem, 8vw, 3rem);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    text-align: center;
+    opacity: 0;
+    animation: fadeUp 0.7s ease 0.25s forwards;
+  }
+  .splash-sub {
+    font-size: 0.8rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    opacity: 0;
+    animation: fadeUp 0.7s ease 0.45s forwards;
+  }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  /* gentle bob for the chapel */
+  .splash-chapel { transform-origin: center bottom; animation: bob 3s ease-in-out infinite; }
+  @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+  .splash-sun { animation: spin 22s linear infinite; transform-origin: 100px 56px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .splash-wave { animation: sway 4s ease-in-out infinite alternate; }
+  @keyframes sway { from { transform: translateX(-4px); } to { transform: translateX(4px); } }
+
+  /* ============ HEADER ============ */
   header {
-    background: var(--sea);
+    background: linear-gradient(165deg, var(--sky) -10%, var(--sea) 55%, var(--sea-deep) 100%);
     color: var(--white);
-    padding: 3rem 2rem 2.5rem;
+    padding: calc(2.6rem + var(--safe-top)) 2rem 3.2rem;
     text-align: center;
     position: relative;
     overflow: hidden;
   }
-  header::before {
-    content: '';
+  /* whitewashed village silhouette at the bottom edge */
+  header .domes {
     position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 40px;
-    background: var(--sand);
-    clip-path: ellipse(55% 100% at 50% 100%);
+    left: 0; right: 0; bottom: -1px;
+    width: 100%;
+    display: block;
   }
   .header-eyebrow {
     font-size: 0.7rem;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.26em;
     text-transform: uppercase;
-    color: rgba(255,255,255,0.55);
-    margin-bottom: 0.8rem;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 0.7rem;
   }
   header h1 {
     font-family: 'Cormorant Garamond', Georgia, serif;
-    font-size: clamp(2.4rem, 6vw, 4rem);
-    font-weight: 600;
-    line-height: 1.1;
+    font-size: clamp(2.4rem, 7vw, 4rem);
+    font-weight: 700;
+    line-height: 1.05;
     letter-spacing: -0.01em;
-    margin-bottom: 0.5rem;
   }
-  header h1 em {
-    font-style: italic;
-    color: #8ec8f0;
-  }
+  header h1 em { font-style: italic; color: var(--sky-lt); }
   .header-sub {
     font-size: 0.85rem;
-    color: rgba(255,255,255,0.6);
-    margin-top: 0.4rem;
+    color: rgba(255,255,255,0.65);
+    margin-top: 0.5rem;
   }
 
-  /* NEXT EVENT BANNER */
+  /* ============ NEXT BANNER ============ */
   .next-banner {
-    background: var(--accent);
+    background: linear-gradient(90deg, var(--accent), #d4763f);
     color: #fff;
     text-align: center;
-    padding: 0.9rem 1.5rem;
+    padding: 0.95rem 1.2rem;
     font-size: 0.9rem;
-    letter-spacing: 0.01em;
+    box-shadow: var(--shadow);
   }
-  .next-banner strong {
-    font-weight: 500;
-  }
+  .next-banner .nb-label { opacity: 0.85; }
+  .next-banner strong { font-weight: 600; }
   .next-banner .countdown {
+    display: inline-block;
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1.3rem;
-    font-weight: 600;
-    margin-left: 0.4rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-left: 0.45rem;
+    vertical-align: -1px;
   }
 
-  /* LEGEND */
-  .legend {
+  /* ============ CONTROLS ============ */
+  .controls {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(244,238,226,0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
     display: flex;
-    gap: 1.2rem;
-    justify-content: center;
     flex-wrap: wrap;
-    padding: 1.2rem 1rem 0.6rem;
-  }
-  .legend-item {
-    display: flex;
+    gap: 0.5rem;
+    justify-content: space-between;
     align-items: center;
-    gap: 0.4rem;
-    font-size: 0.75rem;
+    padding: 0.6rem 1rem;
+  }
+  .filters { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+  .filters button, .actions button {
+    font-family: inherit;
+    font-size: 0.78rem;
+    border: 1px solid var(--line);
+    background: var(--white);
     color: var(--muted);
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
   }
-  .legend-dot {
-    width: 9px; height: 9px;
-    border-radius: 50%;
-    flex-shrink: 0;
+  .filters button:hover, .actions button:hover { border-color: var(--sky); color: var(--sea); }
+  .filters button.active {
+    background: var(--sea); color: #fff; border-color: var(--sea); font-weight: 500;
   }
+  .actions { display: flex; gap: 0.35rem; }
+  #remind-btn.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  #install-btn { background: var(--sea); color:#fff; border-color: var(--sea); }
 
-  /* TIMELINE */
-  .timeline-wrapper {
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 1rem 1.5rem 4rem;
+  /* ============ LEGEND ============ */
+  .legend {
+    display: flex; gap: 1.1rem; justify-content: center; flex-wrap: wrap;
+    padding: 1rem 1rem 0.4rem;
   }
+  .legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; color: var(--muted); }
+  .legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
 
-  .month-section {
-    margin-bottom: 0.5rem;
-  }
+  /* ============ TIMELINE ============ */
+  .timeline-wrapper { max-width: 760px; margin: 0 auto; padding: 0.6rem 1.5rem 4rem; }
+  .empty-state { text-align: center; color: var(--muted); padding: 3rem 1rem; font-size: 0.9rem; }
+
+  .month-section { margin-bottom: 0.4rem; }
   .month-label {
-    font-size: 0.65rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--muted);
-    padding: 1.4rem 0 0.5rem 3.2rem;
-    border-top: 1px solid rgba(0,0,0,0.08);
+    font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted); padding: 1.4rem 0 0.5rem 3.2rem; border-top: 1px solid var(--line);
   }
-  .month-label.current-month {
-    color: var(--accent);
-    font-weight: 500;
-  }
+  .month-label.current-month { color: var(--accent); font-weight: 600; }
 
   .event-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 0.65rem 0;
-    position: relative;
+    display: flex; align-items: flex-start; gap: 1rem;
+    padding: 0.6rem 0; position: relative;
   }
   .event-row::before {
-    content: '';
-    position: absolute;
-    left: 1.2rem;
-    top: 0; bottom: 0;
-    width: 1px;
-    background: rgba(0,0,0,0.08);
+    content: ''; position: absolute; left: 1.2rem; top: 0; bottom: 0;
+    width: 1px; background: var(--line);
   }
   .event-row:first-of-type::before { top: 50%; }
   .event-row:last-of-type::before  { bottom: 50%; }
 
+  /* scroll-reveal */
+  .event-row { opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease, transform 0.5s ease; }
+  .event-row.in { opacity: 1; transform: none; }
+
   .event-dot-wrap {
-    flex-shrink: 0;
-    width: 2.4rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 0.3rem;
-    position: relative;
-    z-index: 1;
+    flex-shrink: 0; width: 2.4rem; display: flex; flex-direction: column;
+    align-items: center; padding-top: 0.35rem; position: relative; z-index: 1;
   }
   .event-dot {
-    width: 11px; height: 11px;
-    border-radius: 50%;
-    background: var(--far);
-    border: 2px solid var(--sand);
-    box-shadow: 0 0 0 1px var(--far);
+    width: 11px; height: 11px; border-radius: 50%;
+    background: var(--far); border: 2px solid var(--sand); box-shadow: 0 0 0 1px var(--far);
   }
-  .event-dot.is-past    { background: var(--past); box-shadow: 0 0 0 1px var(--past); }
-  .event-dot.is-next    { background: var(--next); box-shadow: 0 0 0 1px var(--next); width: 14px; height: 14px; }
-  .event-dot.is-soon    { background: var(--soon); box-shadow: 0 0 0 1px var(--soon); }
-  .event-dot.is-far     { background: var(--far);  box-shadow: 0 0 0 1px var(--far); }
+  .event-dot.is-past { background: var(--past); box-shadow: 0 0 0 1px var(--past); }
+  .event-dot.is-next { background: var(--next); box-shadow: 0 0 0 1px var(--next); width: 14px; height: 14px; }
+  .event-dot.is-soon { background: var(--soon); box-shadow: 0 0 0 1px var(--soon); }
+  .event-dot.is-far  { background: var(--far);  box-shadow: 0 0 0 1px var(--far); }
+  .event-dot.is-next::after {
+    content: ''; position: absolute; left: 50%; top: 0.35rem; width: 14px; height: 14px;
+    transform: translate(-50%,0); border-radius: 50%; background: var(--next);
+    animation: ping 1.8s ease-out infinite;
+  }
+  @keyframes ping { 0% { transform: translate(-50%,0) scale(1); opacity: 0.6; } 100% { transform: translate(-50%,0) scale(2.6); opacity: 0; } }
 
   .event-card {
-    flex: 1;
-    background: var(--white);
-    border-radius: 8px;
-    padding: 0.75rem 1rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.07);
-    border-left: 3px solid transparent;
-    transition: box-shadow 0.15s;
+    flex: 1; background: var(--white); border-radius: 10px; padding: 0.75rem 1rem;
+    box-shadow: var(--shadow); border-left: 3px solid transparent; transition: box-shadow 0.15s, transform 0.15s;
   }
-  .event-card:hover { box-shadow: 0 3px 10px rgba(0,0,0,0.12); }
-  .event-card.is-past    { border-left-color: var(--past); opacity: 0.6; }
-  .event-card.is-next    { border-left-color: var(--next); background: #fff7f3; }
-  .event-card.is-soon    { border-left-color: var(--soon); }
-  .event-card.is-far     { border-left-color: var(--far); }
+  .event-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-1px); }
+  .event-card.is-past { border-left-color: var(--past); opacity: 0.58; }
+  .event-card.is-next { border-left-color: var(--next); background: #fff7f3; }
+  .event-card.is-soon { border-left-color: var(--soon); }
+  .event-card.is-far  { border-left-color: var(--far); }
 
-  .card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 0.5rem;
-    margin-bottom: 0.2rem;
-    flex-wrap: wrap;
-  }
-  .card-name {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.05rem;
-    font-weight: 600;
-    line-height: 1.25;
-    color: var(--ink);
-  }
-  .card-badge {
-    font-size: 0.68rem;
-    letter-spacing: 0.06em;
-    font-weight: 500;
-    padding: 0.15rem 0.5rem;
-    border-radius: 20px;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
+  .card-top { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; margin-bottom: 0.2rem; flex-wrap: wrap; }
+  .card-name { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 600; line-height: 1.25; color: var(--ink); }
+  .card-loc { font-weight: 400; color: var(--muted); font-size: 0.85rem; }
+  .card-badge { font-size: 0.68rem; letter-spacing: 0.04em; font-weight: 600; padding: 0.18rem 0.55rem; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
   .badge-past { background: #ede9e1; color: var(--past); }
   .badge-next { background: #fde8d8; color: var(--accent); }
   .badge-days { background: #ddeef8; color: var(--sea); }
   .badge-far  { background: #d8e8f0; color: var(--sea); }
 
-  .card-date {
-    font-size: 0.78rem;
-    color: var(--muted);
-    margin-bottom: 0.25rem;
-  }
-  .card-desc {
-    font-size: 0.8rem;
-    color: #5a5040;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-  .violin-icon { color: var(--sky); }
+  .card-date { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.25rem; }
+  .card-desc { font-size: 0.8rem; color: #5a5040; display: flex; align-items: center; gap: 0.4rem; }
+  .violin-icon { color: var(--bougain); }
 
-  /* PULSE HIGHLIGHT */
+  /* ============ PULSE ============ */
   @keyframes pulseGlow {
-    0%   { box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+    0%   { box-shadow: var(--shadow); }
     25%  { box-shadow: 0 0 0 6px rgba(192,98,42,0.25), 0 4px 20px rgba(192,98,42,0.35); }
     60%  { box-shadow: 0 0 0 12px rgba(192,98,42,0.08), 0 4px 24px rgba(192,98,42,0.2); }
-    100% { box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+    100% { box-shadow: var(--shadow); }
   }
-  .pulse-highlight {
-    animation: pulseGlow 1.6s ease-out forwards;
-  }
+  .pulse-highlight { animation: pulseGlow 1.6s ease-out forwards; }
 
-  /* FOOTER */
-  footer {
-    text-align: center;
-    padding: 2rem;
-    font-size: 0.72rem;
-    color: var(--muted);
+  /* ============ MODAL ============ */
+  .modal-backdrop {
+    position: fixed; inset: 0; z-index: 200; background: rgba(20,40,60,0.45);
+    display: flex; align-items: flex-end; justify-content: center;
+    opacity: 0; visibility: hidden; transition: opacity 0.25s, visibility 0.25s;
   }
+  .modal-backdrop.open { opacity: 1; visibility: visible; }
+  .modal {
+    background: var(--white); width: 100%; max-width: 460px;
+    border-radius: 16px 16px 0 0; padding: 1.4rem 1.4rem calc(1.6rem + env(safe-area-inset-bottom,0px));
+    transform: translateY(20px); transition: transform 0.25s; box-shadow: var(--shadow-lg);
+  }
+  .modal-backdrop.open .modal { transform: none; }
+  @media (min-width: 520px) {
+    .modal-backdrop { align-items: center; }
+    .modal { border-radius: 16px; }
+  }
+  .modal h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .modal p { font-size: 0.85rem; color: var(--muted); line-height: 1.5; margin-bottom: 1rem; }
+  .field { margin-bottom: 1rem; }
+  .field label { display: block; font-size: 0.78rem; color: var(--ink); font-weight: 500; margin-bottom: 0.4rem; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+  .seg button {
+    font-family: inherit; font-size: 0.82rem; border: none; background: var(--white);
+    color: var(--muted); padding: 0.45rem 1rem; cursor: pointer;
+  }
+  .seg button.active { background: var(--sea); color: #fff; font-weight: 500; }
+  .modal-actions { display: flex; gap: 0.6rem; margin-top: 1.2rem; }
+  .btn {
+    font-family: inherit; font-size: 0.9rem; font-weight: 500; border-radius: 10px;
+    padding: 0.7rem 1rem; cursor: pointer; border: 1px solid var(--line); flex: 1;
+  }
+  .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn-ghost { background: var(--white); color: var(--muted); }
+  .modal-status { font-size: 0.8rem; margin-top: 0.9rem; padding: 0.6rem 0.8rem; border-radius: 8px; display: none; }
+  .modal-status.show { display: block; }
+  .modal-status.ok   { background: #e3f1e3; color: #2c6b3a; }
+  .modal-status.warn { background: #fdf0d8; color: #8a5a18; }
+  .modal-status.err  { background: #f8e0e0; color: #9a3030; }
+  .modal-close { position: absolute; }
+
+  /* ============ FOOTER ============ */
+  footer { text-align: center; padding: 2rem; font-size: 0.72rem; color: var(--muted); }
   footer a { color: var(--sky); text-decoration: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; transition-duration: 0.001s !important; }
+    .event-row { opacity: 1; transform: none; }
+  }
 </style>
 </head>
 <body>
+
+<!-- ============ SPLASH SCREEN ============ -->
+<div id="splash" role="status" aria-label="Φόρτωση">
+  <svg class="splash-art" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#3f8fcf"/><stop offset="1" stop-color="#1a4a6b"/>
+      </linearGradient>
+    </defs>
+    <circle cx="100" cy="100" r="96" fill="url(#sg)"/>
+    <!-- sun -->
+    <g class="splash-sun" opacity="0.9">
+      <circle cx="100" cy="56" r="0"/>
+      <circle cx="148" cy="52" r="11" fill="#f4d58d"/>
+    </g>
+    <!-- chapel -->
+    <g class="splash-chapel">
+      <!-- body -->
+      <rect x="74" y="96" width="52" height="40" rx="3" fill="#fdfcf9"/>
+      <!-- dome drum -->
+      <rect x="86" y="90" width="28" height="8" fill="#fdfcf9"/>
+      <!-- dome -->
+      <path d="M86 92 a14 14 0 0 1 28 0 z" fill="#2d7ab8"/>
+      <!-- cross -->
+      <rect x="98.6" y="66" width="2.8" height="14" fill="#fdfcf9"/>
+      <rect x="95" y="70" width="10" height="2.8" fill="#fdfcf9"/>
+      <!-- door -->
+      <rect x="95" y="116" width="10" height="20" rx="2" fill="#c0622a"/>
+      <!-- little window -->
+      <rect x="80" y="104" width="7" height="7" rx="1" fill="#8ec8f0"/>
+      <rect x="113" y="104" width="7" height="7" rx="1" fill="#8ec8f0"/>
+    </g>
+    <!-- sea waves -->
+    <g class="splash-wave" fill="none" stroke="#bfe0f5" stroke-width="2.4" stroke-linecap="round" opacity="0.85">
+      <path d="M52 150 q9 -7 18 0 t18 0 t18 0 t18 0"/>
+      <path d="M58 162 q9 -7 18 0 t18 0 t18 0"/>
+    </g>
+  </svg>
+  <div>
+    <div class="splash-title">Πανηγύρια<br>Σερίφου</div>
+  </div>
+  <div class="splash-sub">Κυκλάδες · Αιγαίο</div>
+</div>
 
 <header>
   <p class="header-eyebrow">Σέριφος · Κυκλάδες</p>
   <h1>Πανηγύρια <em>2026</em></h1>
   <p class="header-sub">Παραδοσιακές γιορτές στο νησί</p>
+  <svg class="domes" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true">
+    <path fill="#f4eee2" d="M0,60 L0,40 Q40,40 60,28 Q80,16 100,28 Q120,40 160,40 L200,40
+      Q230,40 248,24 A18 18 0 0 1 284,24 Q302,40 332,40 L1440,40 L1440,60 Z"/>
+    <path fill="#f4eee2" d="M0,60 L0,46 Q360,30 720,46 Q1080,62 1440,46 L1440,60 Z"/>
+  </svg>
 </header>
 
-<div class="next-banner" id="next-banner">
-  <!-- filled by JS -->
+<div class="next-banner" id="next-banner"></div>
+
+<div class="controls">
+  <div class="filters" id="filters">
+    <button data-filter="all" class="active">Όλα</button>
+    <button data-filter="upcoming">Επόμενα</button>
+    <button data-filter="violins">🎻 Με βιολιά</button>
+  </div>
+  <div class="actions">
+    <button id="install-btn" hidden>⬇ Εγκατάσταση</button>
+    <button id="remind-btn">🔔 Υπενθυμίσεις</button>
+  </div>
 </div>
 
 <div class="legend">
@@ -277,47 +403,66 @@
 <div class="timeline-wrapper" id="timeline"></div>
 
 <footer>
-  Πηγή: <a href="https://www.discover-serifos.com/el/anakalupste/drastiriotites/paniguria" target="_blank">discover-serifos.com</a> &nbsp;·&nbsp; Δεδομένα 2026
+  Πηγή: <a href="https://www.discover-serifos.com/el/anakalupste/drastiriotites/paniguria" target="_blank" rel="noopener">discover-serifos.com</a>
+  &nbsp;·&nbsp; Δεδομένα 2026
 </footer>
 
+<!-- ============ REMINDERS MODAL ============ -->
+<div class="modal-backdrop" id="remind-modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="rm-title">
+    <h2 id="rm-title">🔔 Υπενθυμίσεις πανηγυριών</h2>
+    <p>Λάβε ειδοποίηση λίγες μέρες πριν από κάθε πανηγύρι, ώστε να μην χάσεις κανένα γλέντι.</p>
+    <div class="field">
+      <label>Πόσες μέρες πριν;</label>
+      <div class="seg" id="days-seg">
+        <button data-days="2">2 μέρες</button>
+        <button data-days="3" class="active">3 μέρες</button>
+      </div>
+    </div>
+    <div class="modal-status" id="rm-status"></div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="rm-enable">Ενεργοποίηση</button>
+      <button class="btn btn-ghost" id="rm-test">Δοκιμή</button>
+    </div>
+    <div class="modal-actions" style="margin-top:0.6rem">
+      <button class="btn btn-ghost" id="rm-close">Κλείσιμο</button>
+    </div>
+  </div>
+</div>
+
 <script>
-// Today's date
-const TODAY = new Date(2026, 5, 28); // June 28 2026
-TODAY.setHours(0,0,0,0);
+/* =========================================================================
+   DATA & DATE LOGIC
+   ========================================================================= */
 
-// Easter 2026: April 12, 2026 (Orthodox)
-const EASTER_2026 = new Date(2026, 3, 12);
-// Zoodochos Pigi: Friday after Easter = April 17 2026 (eve Thursday 16th)
-const ZOODOCHOS_EVE = new Date(2026, 3, 16); // April 16 eve
-const ZOODOCHOS_DAY = new Date(2026, 3, 17); // April 17
+// Dynamic "today" — real current date, normalized to local midnight.
+let TODAY = startOfToday();
+function startOfToday() {
+  const t = new Date();
+  t.setHours(0, 0, 0, 0);
+  return t;
+}
 
-// Ascension: 40 days after Easter = May 21 (eve Wed May 20, day Thu May 21)
-const ANALIPSI_EVE = new Date(2026, 4, 20);
-const ANALIPSI_DAY = new Date(2026, 4, 21);
-
-// Pentecost: 50 days after Easter = June 1 (Sun), Holy Spirit = June 2 (Mon)
-const PENTIKOSTI = new Date(2026, 5, 1);
-const AGIO_PNEUMA = new Date(2026, 5, 2);
+// Movable feasts — Orthodox Easter 2026 = 12 April 2026.
+const EASTER_2026   = new Date(2026, 3, 12);
+const ZOODOCHOS_EVE = new Date(2026, 3, 16);
+const ZOODOCHOS_DAY = new Date(2026, 3, 17);
+const ANALIPSI_EVE  = new Date(2026, 4, 20);
+const ANALIPSI_DAY  = new Date(2026, 4, 21);
+const PENTIKOSTI    = new Date(2026, 5, 1);
+const AGIO_PNEUMA   = new Date(2026, 5, 2);
 
 function d(month0, day) {
   const dt = new Date(2026, month0, day);
-  dt.setHours(0,0,0,0);
+  dt.setHours(0, 0, 0, 0);
   return dt;
 }
-
-function daysFrom(date) {
-  return Math.round((date - TODAY) / 86400000);
-}
-
-function formatDate(dt) {
-  return dt.toLocaleDateString('el-GR', { day: 'numeric', month: 'long' });
-}
+function daysFrom(date) { return Math.round((date - TODAY) / 86400000); }
+function formatDate(dt) { return dt.toLocaleDateString('el-GR', { day: 'numeric', month: 'long' }); }
 
 const MONTHS_EL = ['Ιανουάριος','Φεβρουάριος','Μάρτιος','Απρίλιος','Μάιος','Ιούνιος',
                    'Ιούλιος','Αύγουστος','Σεπτέμβριος','Οκτώβριος','Νοέμβριος','Δεκέμβριος'];
 
-// Raw events: {name, location, date (primary display date = day of feast), eve, day, desc, hasViolins}
-// date = the main date used for sorting. eve/day used for display.
 const RAW = [
   // January
   { name: 'Τρεις Ιεράρχες', location: 'Αλογόμαντρα', eve: d(0,29), day: d(0,30), hasViolins: true, desc: 'Πανηγύρι με βιολιά παραμονή και ανήμερα' },
@@ -374,160 +519,354 @@ const RAW = [
   { name: 'Άγιος Στέφανος', location: 'Κήποι', eve: d(11,26), day: d(11,27), hasViolins: true, desc: 'Πανηγύρι με βιολιά και λειτουργία, ανήμερα' },
 ];
 
-// Sort by sort date (eve if available, else day; null dates go to Aug 2026 middle)
+// undated events sort to mid-August
 function sortDate(ev) {
   if (!ev.eve && !ev.day) return new Date(2026, 7, 15);
   return ev.eve || ev.day;
 }
-
 RAW.sort((a, b) => sortDate(a) - sortDate(b));
 
-// Determine status
 function getStatus(ev) {
   const sd = sortDate(ev);
-  const diff = daysFrom(sd);
   if (ev.day && daysFrom(ev.day) < 0) return 'past';
-  if (diff < 0) return 'past';
+  if (daysFrom(sd) < 0) return 'past';
   return 'future';
 }
 
-// Find next event
 let nextIdx = -1;
-for (let i = 0; i < RAW.length; i++) {
-  const sd = sortDate(RAW[i]);
-  if (daysFrom(sd) >= 0) { nextIdx = i; break; }
+function computeNext() {
+  nextIdx = -1;
+  for (let i = 0; i < RAW.length; i++) {
+    if (daysFrom(sortDate(RAW[i])) >= 0) { nextIdx = i; break; }
+  }
 }
 
-// Badge text
+function relText(diff) {
+  if (diff === 0) return 'ΣΗΜΕΡΑ!';
+  if (diff === 1) return 'αύριο';
+  return `σε ${diff} μέρες`;
+}
 function badge(ev, i) {
-  const sd = sortDate(ev);
-  const diff = daysFrom(sd);
+  const diff = daysFrom(sortDate(ev));
   if (getStatus(ev) === 'past') return { cls: 'badge-past', text: 'Πέρασε' };
-  if (i === nextIdx) return { cls: 'badge-next', text: diff === 0 ? 'ΣΗΜΕΡΑ!' : `σε ${diff} μέρ${diff===1?'α':'ες'}` };
-  if (diff <= 30) return { cls: 'badge-days', text: `σε ${diff} μέρ${diff===1?'α':'ες'}` };
-  return { cls: 'badge-far', text: `σε ${diff} μέρ${diff===1?'α':'ες'}` };
+  if (i === nextIdx) return { cls: 'badge-next', text: diff === 0 ? 'ΣΗΜΕΡΑ!' : relText(diff) };
+  if (diff <= 30) return { cls: 'badge-days', text: relText(diff) };
+  return { cls: 'badge-far', text: relText(diff) };
 }
-
-function dotClass(ev, i) {
+function statusClass(ev, i) {
   const st = getStatus(ev);
   if (st === 'past') return 'is-past';
   if (i === nextIdx) return 'is-next';
-  const diff = daysFrom(sortDate(ev));
-  if (diff <= 30) return 'is-soon';
-  return 'is-far';
+  return daysFrom(sortDate(ev)) <= 30 ? 'is-soon' : 'is-far';
 }
-function cardClass(ev, i) {
-  const st = getStatus(ev);
-  if (st === 'past') return 'is-past';
-  if (i === nextIdx) return 'is-next';
-  const diff = daysFrom(sortDate(ev));
-  if (diff <= 30) return 'is-soon';
-  return 'is-far';
-}
-
 function dateRange(ev) {
   if (!ev.eve && !ev.day) return 'Αύγουστος (χωρίς σταθερή ημερομηνία)';
   if (ev.eve && ev.day) return `${formatDate(ev.eve)} – ${formatDate(ev.day)}`;
   return formatDate(ev.day);
 }
+function monthOf(ev) { return sortDate(ev).getMonth(); }
 
-// Group by month
-function monthOf(ev) {
-  const sd = sortDate(ev);
-  return sd.getMonth();
-}
-
-// Render
+/* =========================================================================
+   RENDER
+   ========================================================================= */
 const timeline = document.getElementById('timeline');
-let currentMonth = -1;
-let monthDiv = null;
+let currentFilter = 'all';
+let revealObserver = null;
 
-RAW.forEach((ev, i) => {
-  const m = monthOf(ev);
-  if (m !== currentMonth) {
-    currentMonth = m;
-    const ms = document.createElement('div');
-    ms.className = 'month-section';
-    const ml = document.createElement('div');
-    const isCurrentMonth = m === TODAY.getMonth();
-    ml.className = 'month-label' + (isCurrentMonth ? ' current-month' : '');
-    ml.textContent = MONTHS_EL[m] + ' 2026' + (isCurrentMonth ? ' — Τώρα' : '');
-    ms.appendChild(ml);
-    timeline.appendChild(ms);
-    monthDiv = ms;
+function passesFilter(ev, i) {
+  if (currentFilter === 'all') return true;
+  if (currentFilter === 'violins') return !!ev.hasViolins;
+  if (currentFilter === 'upcoming') return getStatus(ev) !== 'past';
+  return true;
+}
+
+function render(animateReveal) {
+  computeNext();
+  timeline.innerHTML = '';
+  if (revealObserver) revealObserver.disconnect();
+
+  const visible = RAW.map((ev, i) => ({ ev, i })).filter(({ ev, i }) => passesFilter(ev, i));
+  if (!visible.length) {
+    timeline.innerHTML = '<div class="empty-state">Δεν υπάρχουν πανηγύρια με αυτό το φίλτρο.</div>';
+    return;
   }
 
-  const b = badge(ev, i);
-  const dc = dotClass(ev, i);
-  const cc = cardClass(ev, i);
-  const violin = ev.hasViolins ? '<span class="violin-icon">🎻</span> ' : '';
-
-  const row = document.createElement('div');
-  row.className = 'event-row';
-  if (i === nextIdx) row.id = 'next-event';
-  row.innerHTML = `
-    <div class="event-dot-wrap">
-      <div class="event-dot ${dc}"></div>
-    </div>
-    <div class="event-card ${cc}">
-      <div class="card-top">
-        <div class="card-name">${ev.name} <span style="font-weight:400;color:var(--muted);font-size:0.88rem">· ${ev.location}</span></div>
-        <span class="card-badge ${b.cls}">${b.text}</span>
-      </div>
-      <div class="card-date">${dateRange(ev)}</div>
-      <div class="card-desc">${violin}${ev.desc}</div>
-    </div>`;
-  monthDiv.appendChild(row);
-});
-
-// Autoscroll to next event — mobile-safe
-function doScroll() {
-  const target = document.getElementById('next-event');
-  if (!target) return;
-
-  const targetY = target.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.35;
-  const startY = window.scrollY;
-  const distance = targetY - startY;
-  const duration = 1100;
-  let startTime = null;
-
-  function easeInOutCubic(t) {
-    return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3) / 2;
-  }
-
-  function step(ts) {
-    if (!startTime) startTime = ts;
-    const progress = Math.min((ts - startTime) / duration, 1);
-    window.scrollTo(0, startY + distance * easeInOutCubic(progress));
-    if (progress < 1) {
-      requestAnimationFrame(step);
-    } else {
-      const card = target.querySelector('.event-card');
-      if (card) {
-        card.classList.add('pulse-highlight');
-        setTimeout(() => card.classList.remove('pulse-highlight'), 1800);
-      }
+  let currentMonth = -1, monthDiv = null;
+  visible.forEach(({ ev, i }) => {
+    const m = monthOf(ev);
+    if (m !== currentMonth) {
+      currentMonth = m;
+      monthDiv = document.createElement('div');
+      monthDiv.className = 'month-section';
+      const ml = document.createElement('div');
+      const isCurrent = m === TODAY.getMonth();
+      ml.className = 'month-label' + (isCurrent ? ' current-month' : '');
+      ml.textContent = MONTHS_EL[m] + ' 2026' + (isCurrent ? ' — Τώρα' : '');
+      monthDiv.appendChild(ml);
+      timeline.appendChild(monthDiv);
     }
+
+    const b = badge(ev, i);
+    const sc = statusClass(ev, i);
+    const violin = ev.hasViolins ? '<span class="violin-icon">🎻</span> ' : '';
+    const row = document.createElement('div');
+    row.className = 'event-row';
+    if (i === nextIdx) row.id = 'next-event';
+    row.innerHTML = `
+      <div class="event-dot-wrap"><div class="event-dot ${sc}"></div></div>
+      <div class="event-card ${sc}">
+        <div class="card-top">
+          <div class="card-name">${ev.name} <span class="card-loc">· ${ev.location}</span></div>
+          <span class="card-badge ${b.cls}">${b.text}</span>
+        </div>
+        <div class="card-date">${dateRange(ev)}</div>
+        <div class="card-desc">${violin}${ev.desc}</div>
+      </div>`;
+    monthDiv.appendChild(row);
+  });
+
+  // scroll-reveal
+  const rows = timeline.querySelectorAll('.event-row');
+  if ('IntersectionObserver' in window) {
+    revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); revealObserver.unobserve(e.target); } });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    rows.forEach((r) => revealObserver.observe(r));
+  } else {
+    rows.forEach((r) => r.classList.add('in'));
   }
-  requestAnimationFrame(step);
+
+  renderBanner();
 }
 
-// Try after DOM ready, then again after full load, then a final safety net
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => setTimeout(doScroll, 300));
-} else {
-  setTimeout(doScroll, 300);
-}
-window.addEventListener('load', () => setTimeout(doScroll, 600));
-
-// Next banner
-const banner = document.getElementById('next-banner');
-if (nextIdx >= 0) {
+function renderBanner() {
+  const banner = document.getElementById('next-banner');
+  if (nextIdx < 0) { banner.innerHTML = '✨ Η φετινή σεζόν πανηγυριών ολοκληρώθηκε — τα λέμε του χρόνου!'; return; }
   const ne = RAW[nextIdx];
   const diff = daysFrom(sortDate(ne));
   const dayText = diff === 0 ? 'ΣΗΜΕΡΑ' : diff === 1 ? 'ΑΥΡΙΟ' : `σε ${diff} μέρες`;
-  banner.innerHTML = `🎉 Επόμενο πανηγύρι: <strong>${ne.name} – ${ne.location}</strong><span class="countdown">${dayText}</span>`;
+  banner.innerHTML = `<span class="nb-label">🎉 Επόμενο πανηγύρι:</span> <strong>${ne.name} – ${ne.location}</strong><span class="countdown">${dayText}</span>`;
 }
+
+/* Re-render if the calendar day changed while the app stayed open. */
+function tick() {
+  const fresh = startOfToday();
+  if (fresh.getTime() !== TODAY.getTime()) {
+    TODAY = fresh;
+    render(false);
+  }
+}
+setInterval(tick, 60000);
+
+/* =========================================================================
+   FILTERS
+   ========================================================================= */
+document.getElementById('filters').addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-filter]');
+  if (!btn) return;
+  currentFilter = btn.dataset.filter;
+  document.querySelectorAll('#filters button').forEach((b) => b.classList.toggle('active', b === btn));
+  render(false);
+});
+
+/* =========================================================================
+   AUTOSCROLL TO NEXT (first load only)
+   ========================================================================= */
+function doScroll() {
+  const target = document.getElementById('next-event');
+  if (!target) return;
+  const targetY = target.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.35;
+  const startY = window.scrollY;
+  const distance = targetY - startY;
+  if (Math.abs(distance) < 40) { flashNext(target); return; }
+  const duration = 1000;
+  let startTime = null;
+  const ease = (t) => (t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3) / 2);
+  function step(ts) {
+    if (!startTime) startTime = ts;
+    const p = Math.min((ts - startTime) / duration, 1);
+    window.scrollTo(0, startY + distance * ease(p));
+    if (p < 1) requestAnimationFrame(step); else flashNext(target);
+  }
+  requestAnimationFrame(step);
+}
+function flashNext(target) {
+  const card = target.querySelector('.event-card');
+  if (!card) return;
+  card.classList.add('pulse-highlight');
+  setTimeout(() => card.classList.remove('pulse-highlight'), 1800);
+}
+
+/* =========================================================================
+   SPLASH DISMISS
+   ========================================================================= */
+function hideSplash() {
+  const s = document.getElementById('splash');
+  if (s && !s.classList.contains('hide')) {
+    s.classList.add('hide');
+    setTimeout(() => { setTimeout(doScroll, 200); }, 300);
+  }
+}
+
+/* =========================================================================
+   PWA: service worker + install prompt
+   ========================================================================= */
+let swReg = null;
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then((reg) => {
+      swReg = reg;
+      // If notifications were enabled before, refresh the schedule on every load (catch-up).
+      if (localStorage.getItem('remindOn') === '1') {
+        pushSchedule(getDaysBefore());
+        postToSW({ type: 'CHECK_REMINDERS' });
+      }
+    }).catch((err) => console.warn('SW registration failed', err));
+  });
+}
+
+let deferredPrompt = null;
+const installBtn = document.getElementById('install-btn');
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  installBtn.hidden = false;
+});
+installBtn.addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  installBtn.hidden = true;
+});
+window.addEventListener('appinstalled', () => { installBtn.hidden = true; });
+
+/* =========================================================================
+   REMINDERS
+   ========================================================================= */
+const remindBtn = document.getElementById('remind-btn');
+const modal = document.getElementById('remind-modal');
+const rmStatus = document.getElementById('rm-status');
+
+function getDaysBefore() { return parseInt(localStorage.getItem('remindDays') || '3', 10); }
+function setDaysBefore(n) { localStorage.setItem('remindDays', String(n)); }
+
+function syncRemindBtn() {
+  const on = localStorage.getItem('remindOn') === '1' && (window.Notification && Notification.permission === 'granted');
+  remindBtn.classList.toggle('on', on);
+  remindBtn.textContent = on ? '🔔 Υπενθυμίσεις ✓' : '🔔 Υπενθυμίσεις';
+}
+
+function openModal() {
+  // reflect stored day choice
+  const days = getDaysBefore();
+  document.querySelectorAll('#days-seg button').forEach((b) => b.classList.toggle('active', parseInt(b.dataset.days,10) === days));
+  setStatus('', '');
+  modal.classList.add('open');
+}
+function closeModal() { modal.classList.remove('open'); }
+function setStatus(text, kind) {
+  rmStatus.className = 'modal-status' + (text ? ' show ' + kind : '');
+  rmStatus.textContent = text;
+}
+
+remindBtn.addEventListener('click', openModal);
+document.getElementById('rm-close').addEventListener('click', closeModal);
+modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+document.getElementById('days-seg').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-days]');
+  if (!b) return;
+  document.querySelectorAll('#days-seg button').forEach((x) => x.classList.toggle('active', x === b));
+  setDaysBefore(parseInt(b.dataset.days, 10));
+  if (localStorage.getItem('remindOn') === '1') pushSchedule(getDaysBefore());
+});
+
+// Build reminder entries for every upcoming dated event.
+function buildSchedule(daysBefore) {
+  const now = Date.now();
+  const list = [];
+  RAW.forEach((ev) => {
+    const start = ev.eve || ev.day;
+    if (!start) return;                 // skip undated (Παναγιά Καμαρωτή)
+    const eventTs = start.getTime();
+    if (eventTs < now) return;          // skip past events
+    const fireTs = eventTs - daysBefore * 86400000;
+    list.push({
+      id: `${ev.name}|${ev.location}|${start.getFullYear()}-${start.getMonth()+1}-${start.getDate()}`,
+      title: `🎻 ${ev.name}`,
+      body: `${ev.location} · ${dateRange(ev)} — ${daysBefore === 1 ? 'αύριο' : 'σε ' + daysBefore + ' μέρες'}!`,
+      fireTs,
+      eventTs,
+    });
+  });
+  return list;
+}
+
+function postToSW(msg) {
+  if (!('serviceWorker' in navigator)) return Promise.resolve();
+  return navigator.serviceWorker.ready.then((reg) => {
+    const target = reg.active || navigator.serviceWorker.controller;
+    if (target) target.postMessage(msg);
+  }).catch(() => {});
+}
+
+function pushSchedule(daysBefore) {
+  return postToSW({ type: 'SET_SCHEDULE', schedule: buildSchedule(daysBefore) });
+}
+
+async function registerPeriodicSync() {
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    if ('periodicSync' in reg) {
+      const status = await navigator.permissions.query({ name: 'periodic-background-sync' });
+      if (status.state === 'granted') {
+        await reg.periodicSync.register('panigiria-reminders', { minInterval: 12 * 60 * 60 * 1000 });
+      }
+    }
+  } catch (e) { /* unsupported — catch-up on open still works */ }
+}
+
+document.getElementById('rm-enable').addEventListener('click', async () => {
+  if (!('Notification' in window)) {
+    setStatus('Ο browser σου δεν υποστηρίζει ειδοποιήσεις. Δοκίμασε να εγκαταστήσεις την εφαρμογή.', 'err');
+    return;
+  }
+  let perm = Notification.permission;
+  if (perm !== 'granted') perm = await Notification.requestPermission();
+  if (perm !== 'granted') {
+    setStatus('Οι ειδοποιήσεις απορρίφθηκαν. Μπορείς να τις ενεργοποιήσεις από τις ρυθμίσεις του browser.', 'warn');
+    syncRemindBtn();
+    return;
+  }
+  localStorage.setItem('remindOn', '1');
+  const days = getDaysBefore();
+  await pushSchedule(days);
+  await registerPeriodicSync();
+  await postToSW({ type: 'CHECK_REMINDERS' });
+  syncRemindBtn();
+  const n = buildSchedule(days).length;
+  setStatus(`Έτοιμο! Θα ειδοποιείσαι ${days} μέρες πριν από ${n} πανηγύρια. 🎉`, 'ok');
+});
+
+document.getElementById('rm-test').addEventListener('click', async () => {
+  if (!('Notification' in window)) { setStatus('Ο browser δεν υποστηρίζει ειδοποιήσεις.', 'err'); return; }
+  let perm = Notification.permission;
+  if (perm !== 'granted') perm = await Notification.requestPermission();
+  if (perm !== 'granted') { setStatus('Χρειάζεται άδεια για ειδοποιήσεις.', 'warn'); return; }
+  await postToSW({ type: 'TEST_NOTIFICATION', title: 'Πανηγύρια Σερίφου', body: 'Οι ειδοποιήσεις λειτουργούν! 🎻' });
+  setStatus('Στάλθηκε δοκιμαστική ειδοποίηση.', 'ok');
+});
+
+/* =========================================================================
+   BOOT
+   ========================================================================= */
+render(true);
+syncRemindBtn();
+
+// Hide splash after load (min display time), with safety fallback + tap-to-skip.
+window.addEventListener('load', () => setTimeout(hideSplash, 1200));
+setTimeout(hideSplash, 3500);
+document.getElementById('splash').addEventListener('click', hideSplash);
 </script>
 </body>
 </html>
