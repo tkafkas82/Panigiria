@@ -445,6 +445,7 @@
     <button data-filter="all" class="active">Όλα</button>
     <button data-filter="upcoming">Επόμενα</button>
     <button data-filter="violins">🎻 Με βιολιά</button>
+    <button data-filter="fullmoon">🌕 Πανσέληνος</button>
   </div>
   <div class="actions">
     <button id="install-btn" hidden>⬇ Εγκατάσταση</button>
@@ -652,6 +653,11 @@ function isFullMoonEvent(ev) {
   const dates = [ev.eve, ev.day].filter(Boolean);
   return dates.some(dt => moonData(dt).daysFromFull <= 0.5);
 }
+// Full moon OR within ±1 day — used by the 🌕 filter.
+function isMoonSpecial(ev) {
+  const dates = [ev.eve, ev.day].filter(Boolean);
+  return dates.some(dt => moonData(dt).daysFromFull <= 1.5);
+}
 
 const MONTHS_EL = ['Ιανουάριος','Φεβρουάριος','Μάρτιος','Απρίλιος','Μάιος','Ιούνιος',
                    'Ιούλιος','Αύγουστος','Σεπτέμβριος','Οκτώβριος','Νοέμβριος','Δεκέμβριος'];
@@ -769,6 +775,7 @@ let revealObserver = null;
 function passesFilter(ev, i) {
   if (currentFilter === 'all') return true;
   if (currentFilter === 'violins') return !!ev.hasViolins;
+  if (currentFilter === 'fullmoon') return isMoonSpecial(ev);
   if (currentFilter === 'upcoming') return getStatus(ev) !== 'past';
   return true;
 }

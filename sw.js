@@ -4,7 +4,7 @@
  * - Background firing via Periodic Background Sync (where supported)
  * - Server push support (no-op until a backend is added)
  */
-const VERSION = 'panigiria-v1';
+const VERSION = 'panigiria-v2';
 const APP_SHELL = [
   './',
   './index.html',
