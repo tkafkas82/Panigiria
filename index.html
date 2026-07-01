@@ -302,6 +302,26 @@
   .card-desc { font-size: 0.8rem; color: #5a5040; display: flex; align-items: center; gap: 0.4rem; }
   .violin-icon { color: var(--bougain); }
 
+  /* ============ MOON PHASE ============ */
+  .moon { display: inline-flex; align-items: center; gap: 0.25rem; margin-left: 0.5rem; vertical-align: -1px; }
+  .moon-emoji { font-size: 0.95rem; line-height: 1; }
+  .moon-txt { font-size: 0.66rem; letter-spacing: 0.02em; }
+  .moon-near { color: var(--sea); }
+  .moon-near .moon-txt { color: var(--muted); }
+  /* full moon = something special: glowing golden chip */
+  .moon-full {
+    background: linear-gradient(90deg, #f7d774, #f2b53d);
+    color: #5a3b00; font-weight: 600; padding: 0.06rem 0.5rem 0.06rem 0.4rem;
+    border-radius: 999px; box-shadow: 0 0 0 0 rgba(242,181,61,0.55);
+    animation: moonGlow 2.6s ease-in-out infinite;
+  }
+  @keyframes moonGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(242,181,61,0.5); }
+    50%      { box-shadow: 0 0 12px 3px rgba(242,181,61,0.85); }
+  }
+  /* highlight the whole card on a full-moon panigiri */
+  .event-card.is-fullmoon { border-left-color: #e0a92e; box-shadow: 0 0 0 1px rgba(224,169,46,0.35), var(--shadow); }
+
   /* ============ PULSE ============ */
   @keyframes pulseGlow {
     0%   { box-shadow: var(--shadow); }
@@ -579,6 +599,60 @@ function d(month0, day) {
 function daysFrom(date) { return Math.round((date - TODAY) / 86400000); }
 function formatDate(dt) { return dt.toLocaleDateString('el-GR', { day: 'numeric', month: 'long' }); }
 
+/* =========================================================================
+   MOON PHASE  (computed astronomically — works offline, no API)
+   Accurate to a few hours for full-moon timing; verified against 2026 data.
+   ========================================================================= */
+const MOON_EMOJI = ['🌑','🌒','🌓','🌔','🌕','🌖','🌗','🌘'];
+const MOON_NAME  = ['Νέα σελήνη','Αύξων μηνίσκος','Πρώτο τέταρτο','Αύξουσα αμφίκυρτη',
+                    'Πανσέληνος','Φθίνουσα αμφίκυρτη','Τελευταίο τέταρτο','Φθίνων μηνίσκος'];
+function _rad(d) { return d * Math.PI / 180; }
+function moonData(date) {
+  // Sample at ~local midday for stability.
+  const jd = (date.getTime() + 12 * 3600000) / 86400000 + 2440587.5;
+  const T  = (jd - 2451545.0) / 36525;
+  const Dn = (((297.8501921 + 445267.1114034 * T) % 360) + 360) % 360; // mean elongation
+  const M  = _rad((((357.5291092 + 35999.0502909 * T) % 360) + 360) % 360);
+  const Mp = _rad((((134.9633964 + 477198.8675055 * T) % 360) + 360) % 360);
+  const Dr = _rad(Dn);
+  // Phase angle (Meeus 48.4, main terms): ~0° at full moon, ~180° at new.
+  let i = 180 - Dn - 6.289 * Math.sin(Mp) + 2.100 * Math.sin(M)
+        - 1.274 * Math.sin(2 * Dr - Mp) - 0.658 * Math.sin(2 * Dr)
+        - 0.214 * Math.sin(2 * Mp) - 0.110 * Math.sin(Dr);
+  i = ((i % 360) + 360) % 360;
+  const degFromFull = Math.min(i, 360 - i);
+  return {
+    idx: Math.floor(Dn / 45 + 0.5) % 8,   // 0..7 → MOON_EMOJI
+    daysFromFull: degFromFull / 12.1907,   // ~12.19° per day
+  };
+}
+// Moon indicator for an event: picks the event date closest to a full moon.
+function moonHTML(ev) {
+  const dates = [ev.eve, ev.day].filter(Boolean);
+  if (!dates.length) return '';
+  let best = null;
+  for (const dt of dates) {
+    const md = moonData(dt);
+    if (!best || md.daysFromFull < best.daysFromFull) best = md;
+  }
+  const emoji = MOON_EMOJI[best.idx];
+  if (best.daysFromFull <= 0.5) {
+    // bullseye — full moon on this date
+    return `<span class="moon moon-full" title="Πανσέληνος! Γλέντι με πανσέληνο 🌕">` +
+           `<span class="moon-emoji">🌕</span><span class="moon-txt">Πανσέληνος</span></span>`;
+  }
+  if (best.daysFromFull <= 1.5) {
+    // within ±1 day of a full moon
+    return `<span class="moon moon-near" title="Σχεδόν πανσέληνος (±1 μέρα)">` +
+           `<span class="moon-emoji">${emoji}</span><span class="moon-txt">σχεδόν πανσέληνος</span></span>`;
+  }
+  return `<span class="moon" title="${MOON_NAME[best.idx]}"><span class="moon-emoji">${emoji}</span></span>`;
+}
+function isFullMoonEvent(ev) {
+  const dates = [ev.eve, ev.day].filter(Boolean);
+  return dates.some(dt => moonData(dt).daysFromFull <= 0.5);
+}
+
 const MONTHS_EL = ['Ιανουάριος','Φεβρουάριος','Μάρτιος','Απρίλιος','Μάιος','Ιούνιος',
                    'Ιούλιος','Αύγουστος','Σεπτέμβριος','Οκτώβριος','Νοέμβριος','Δεκέμβριος'];
 
@@ -728,17 +802,19 @@ function render(animateReveal) {
     const b = badge(ev, i);
     const sc = statusClass(ev, i);
     const violin = ev.hasViolins ? '<span class="violin-icon">🎻</span> ' : '';
+    const moon = moonHTML(ev);
+    const fullMoonCls = isFullMoonEvent(ev) ? ' is-fullmoon' : '';
     const row = document.createElement('div');
     row.className = 'event-row';
     if (i === nextIdx) row.id = 'next-event';
     row.innerHTML = `
       <div class="event-dot-wrap"><div class="event-dot ${sc}"></div></div>
-      <div class="event-card ${sc}">
+      <div class="event-card ${sc}${fullMoonCls}">
         <div class="card-top">
           <div class="card-name">${ev.name} <span class="card-loc">· ${ev.location}</span></div>
           <span class="card-badge ${b.cls}">${b.text}</span>
         </div>
-        <div class="card-date">${dateRange(ev)}</div>
+        <div class="card-date">${dateRange(ev)}${moon}</div>
         <div class="card-desc">${violin}${ev.desc}</div>
       </div>`;
     monthDiv.appendChild(row);
